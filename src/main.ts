@@ -60,11 +60,11 @@ app.innerHTML = `
   <h1>Interclub Planning</h1>
 
   <div class="main-tabs">
-    <button class="main-tab" data-panel="player-list">Spelers</button>
-    <button class="main-tab active" data-panel="compositions">Opstellingen</button>
+    <button class="main-tab active" data-panel="player-list">Spelers</button>
+    <button class="main-tab" data-panel="compositions">Opstellingen</button>
   </div>
 
-  <section id="player-list" class="panel hidden">
+  <section id="player-list" class="panel">
     <ul id="players-ul"></ul>
     <button id="btn-add-player" class="btn-add"><i class="fa-solid fa-plus"></i></button>
     <form id="player-form">
@@ -76,7 +76,7 @@ app.innerHTML = `
     </form>
   </section>
 
-  <section id="compositions" class="panel">
+  <section id="compositions" class="panel hidden">
     <label>Serie<input id="input-limit" type="number" min="1" /></label>
     <div class="tabs">
       <button class="tab active" data-tab="singles">Enkels</button>
