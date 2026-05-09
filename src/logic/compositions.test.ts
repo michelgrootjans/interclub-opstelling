@@ -11,6 +11,19 @@ describe('findCompositions', () => {
         expect(findSingleCompositions(players, 999)).toEqual([])
     })
 
+    it('returns one composition with the actual players passed in', () => {
+        const players = [
+            {name: 'Eve', singles: 55, doubles: 30},
+            {name: 'Frank', singles: 40, doubles: 35},
+            {name: 'Grace', singles: 25, doubles: 20},
+            {name: 'Hank', singles: 10, doubles: 10},
+        ]
+        expect(findSingleCompositions(players, 999)).toMatchObject([{
+            total: 55 + 40 + 25 + 10,
+            players,
+        }])
+    })
+
     it('returns one composition when exactly 4 players are available within the limit', () => {
         const players = [
             {name: 'Alice', singles: 60, doubles: 50},
