@@ -1,10 +1,10 @@
-type Player = {
+export type Player = {
   name: string
   singles: number
   doubles: number
 }
 
-type Composition = {
+export type Composition = {
   total: number
   players: Player[]
 }

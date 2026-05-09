@@ -1,12 +1,7 @@
 import './style.css'
-import { findSingleCompositions } from './logic/compositions'
+import { findDoubleCompositions, findSingleCompositions, type Composition, type Player as BasePlayer } from './logic/compositions'
 
-type Player = {
-  name: string
-  singles: number
-  doubles: number
-  available: boolean
-}
+type Player = BasePlayer & { available: boolean }
 
 const PLAYERS_KEY = 'tennis-players'
 const LIMIT_KEY = 'tennis-limit'
@@ -56,9 +51,13 @@ app.innerHTML = `
   </section>
 
   <section id="compositions">
-    <h2>Opstellingen</h2>
     <label>Limiet: <input id="input-limit" type="number" min="1" /></label>
-    <div id="compositions-list"></div>
+    <div class="tabs">
+      <button class="tab active" data-tab="singles">Singles</button>
+      <button class="tab" data-tab="doubles">Dubbel</button>
+    </div>
+    <div id="singles-compositions-list" class="tab-panel"></div>
+    <div id="doubles-compositions-list" class="tab-panel hidden"></div>
   </section>
 `
 
@@ -68,7 +67,8 @@ const singlesInput = document.getElementById('input-singles') as HTMLInputElemen
 const doublesInput = document.getElementById('input-doubles') as HTMLInputElement
 const limitInput = document.getElementById('input-limit') as HTMLInputElement
 const playersUl = document.getElementById('players-ul')!
-const compositionsList = document.getElementById('compositions-list')!
+const singlesCompositionsList = document.getElementById('singles-compositions-list')!
+const doublesCompositionsList = document.getElementById('doubles-compositions-list')!
 
 limitInput.value = String(limit)
 
@@ -86,16 +86,19 @@ function renderPlayers(): void {
     .join('')
 }
 
-type Slot = { singles: number; names: string[] }
+type Slot = { ranking: number; names: string[] }
 type MergedComposition = { total: number; slots: Slot[] }
 
-function groupCompositions(compositions: ReturnType<typeof findSingleCompositions>): MergedComposition[] {
+function groupCompositions(
+  compositions: Composition[],
+  ranking: (p: BasePlayer) => number
+): MergedComposition[] {
   const groups = new Map<string, MergedComposition>()
   for (const comp of compositions) {
-    const sorted = [...comp.players].sort((a, b) => b.singles - a.singles)
-    const key = `${comp.total}_${sorted.map(p => p.singles).join('_')}`
+    const sorted = [...comp.players].sort((a, b) => ranking(b) - ranking(a))
+    const key = `${comp.total}_${sorted.map(p => ranking(p)).join('_')}`
     if (!groups.has(key)) {
-      groups.set(key, { total: comp.total, slots: sorted.map(p => ({ singles: p.singles, names: [p.name] })) })
+      groups.set(key, { total: comp.total, slots: sorted.map(p => ({ ranking: ranking(p), names: [p.name] })) })
     } else {
       sorted.forEach((p, i) => {
         const slot = groups.get(key)!.slots[i]
@@ -106,26 +109,41 @@ function groupCompositions(compositions: ReturnType<typeof findSingleComposition
   return [...groups.values()]
 }
 
-function renderCompositions(): void {
-  const compositions = findSingleCompositions(players.filter(p => p.available), limit)
-    .sort((a, b) => b.total - a.total)
+function renderCompositions(
+  container: HTMLElement,
+  compositions: Composition[],
+  ranking: (p: BasePlayer) => number
+): void {
   if (compositions.length === 0) {
-    compositionsList.innerHTML = '<p>Geen geldige opstellingen.</p>'
+    container.innerHTML = '<p>Geen geldige opstellingen.</p>'
     return
   }
-  compositionsList.innerHTML = groupCompositions(compositions)
+  container.innerHTML = groupCompositions(compositions, ranking)
     .map(c => `
       <div class="composition">
         <strong>Totaal: ${c.total}</strong>
-        <ul>${c.slots.map(s => `<li>${s.names.join(' of ')} (${s.singles})</li>`).join('')}</ul>
+        <ul>${c.slots.map(s => `<li>${s.names.join(' of ')} (${s.ranking})</li>`).join('')}</ul>
       </div>
     `)
     .join('')
 }
 
+function renderSinglesCompositions(): void {
+  const available = players.filter(p => p.available)
+  const compositions = findSingleCompositions(available, limit).sort((a, b) => b.total - a.total)
+  renderCompositions(singlesCompositionsList, compositions, p => p.singles)
+}
+
+function renderDoubleCompositions(): void {
+  const available = players.filter(p => p.available)
+  const compositions = findDoubleCompositions(available, limit).sort((a, b) => b.total - a.total)
+  renderCompositions(doublesCompositionsList, compositions, p => p.doubles)
+}
+
 function update(): void {
   renderPlayers()
-  renderCompositions()
+  renderSinglesCompositions()
+  renderDoubleCompositions()
 }
 
 form.addEventListener('submit', e => {
@@ -161,7 +179,7 @@ limitInput.addEventListener('input', () => {
   if (!isNaN(val) && val > 0) {
     limit = val
     saveLimit(limit)
-    renderCompositions()
+    update()
   }
 })
 
