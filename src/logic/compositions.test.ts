@@ -1,5 +1,5 @@
 import {describe, expect, it} from 'vitest'
-import {findSingleCompositions} from './compositions'
+import {findDoubleCompositions, findSingleCompositions} from './compositions'
 
 const alice_60_50 = {name: 'Alice', singles: 60, doubles: 50}
 const bob_45_40   = {name: 'Bob',   singles: 45, doubles: 40}
@@ -45,6 +45,37 @@ describe('findCompositions', () => {
         const players = [alice_60_50, bob_45_40, carol_20_20, dave_15_15]
         expect(findSingleCompositions(players, 140)).toMatchObject([{
             total: 60 + 45 + 20 + 15,
+            players,
+        }])
+    })
+})
+
+describe('findDoubleCompositions', () => {
+    it('returns no composition when fewer than 4 players are available', () => {
+        const players = [alice_60_50, bob_45_40, carol_20_20]
+        expect(findDoubleCompositions(players, 999)).toEqual([])
+    })
+
+    it('returns no composition when the total exceeds the limit', () => {
+        const players = [alice_60_50, bob_45_40, carol_20_20, dave_15_15]
+        expect(findDoubleCompositions(players, 124)).toEqual([])
+    })
+
+    it('returns all combinations of 4 when more than 4 players are available', () => {
+        const players = [alice_60_50, bob_45_40, carol_20_20, dave_15_15, eve_10_10]
+        expect(findDoubleCompositions(players, 999)).toMatchObject([
+            {total: 125, players: [alice_60_50, bob_45_40, carol_20_20, dave_15_15]},
+            {total: 120, players: [alice_60_50, bob_45_40, carol_20_20, eve_10_10]},
+            {total: 115, players: [alice_60_50, bob_45_40, dave_15_15,  eve_10_10]},
+            {total:  95, players: [alice_60_50, carol_20_20, dave_15_15, eve_10_10]},
+            {total:  85, players: [bob_45_40,   carol_20_20, dave_15_15, eve_10_10]},
+        ])
+    })
+
+    it('returns one composition when exactly 4 players are available within the limit', () => {
+        const players = [alice_60_50, bob_45_40, carol_20_20, dave_15_15]
+        expect(findDoubleCompositions(players, 125)).toMatchObject([{
+            total: 50 + 40 + 20 + 15,
             players,
         }])
     })

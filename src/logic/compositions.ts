@@ -4,7 +4,7 @@ type Player = {
   doubles: number
 }
 
-type SinglesComposition = {
+type Composition = {
   total: number
   players: Player[]
 }
@@ -19,8 +19,16 @@ function combinations<T>(arr: T[], k: number): T[][] {
   ]
 }
 
-export function findSingleCompositions(players: Player[], limit: number): SinglesComposition[] {
+function findCompositions(players: Player[], limit: number, ranking: (p: Player) => number): Composition[] {
   return combinations(players, 4)
-    .map(group => ({ total: group.reduce((sum, p) => sum + p.singles, 0), players: group }))
+    .map(group => ({ total: group.reduce((sum, p) => sum + ranking(p), 0), players: group }))
     .filter(c => c.total <= limit)
+}
+
+export function findSingleCompositions(players: Player[], limit: number): Composition[] {
+  return findCompositions(players, limit, p => p.singles)
+}
+
+export function findDoubleCompositions(players: Player[], limit: number): Composition[] {
+  return findCompositions(players, limit, p => p.doubles)
 }
