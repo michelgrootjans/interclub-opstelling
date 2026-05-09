@@ -79,6 +79,26 @@ function renderPlayers(): void {
     .join('')
 }
 
+type Slot = { singles: number; names: string[] }
+type MergedComposition = { total: number; slots: Slot[] }
+
+function groupCompositions(compositions: ReturnType<typeof findSingleCompositions>): MergedComposition[] {
+  const groups = new Map<string, MergedComposition>()
+  for (const comp of compositions) {
+    const sorted = [...comp.players].sort((a, b) => b.singles - a.singles)
+    const key = `${comp.total}_${sorted.map(p => p.singles).join('_')}`
+    if (!groups.has(key)) {
+      groups.set(key, { total: comp.total, slots: sorted.map(p => ({ singles: p.singles, names: [p.name] })) })
+    } else {
+      sorted.forEach((p, i) => {
+        const slot = groups.get(key)!.slots[i]
+        if (!slot.names.includes(p.name)) slot.names.push(p.name)
+      })
+    }
+  }
+  return [...groups.values()]
+}
+
 function renderCompositions(): void {
   const compositions = findSingleCompositions(players, limit)
     .sort((a, b) => b.total - a.total)
@@ -86,11 +106,11 @@ function renderCompositions(): void {
     compositionsList.innerHTML = '<p>Geen geldige opstellingen.</p>'
     return
   }
-  compositionsList.innerHTML = compositions
+  compositionsList.innerHTML = groupCompositions(compositions)
     .map(c => `
       <div class="composition">
         <strong>Totaal: ${c.total}</strong>
-        <ul>${[...c.players].sort((a, b) => b.singles - a.singles).map(p => `<li>${p.name} (${p.singles})</li>`).join('')}</ul>
+        <ul>${c.slots.map(s => `<li>${s.names.join(' of ')} (${s.singles})</li>`).join('')}</ul>
       </div>
     `)
     .join('')
