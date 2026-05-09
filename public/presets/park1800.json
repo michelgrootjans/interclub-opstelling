@@ -1,0 +1,19 @@
+[
+  {"name":"Yves","singles":75,"doubles":75, "available":  true},
+  {"name":"Igor","singles":75,"doubles":75, "available":  true},
+  {"name":"Gerard","singles":60,"doubles":60, "available":  true},
+  {"name":"Greg","singles":50,"doubles":55, "available":  true},
+  {"name":"Bert","singles":50,"doubles":55, "available":  false},
+  {"name":"Karim","singles":50,"doubles":50, "available":  true},
+  {"name":"Geoffroy","singles":50,"doubles":50, "available":  true},
+  {"name":"Tobias","singles":50,"doubles":50, "available":  true},
+  {"name":"Jorn","singles":30,"doubles":30, "available":  false},
+  {"name":"Jimmy","singles":25,"doubles":30, "available":  true},
+  {"name":"Filip","singles":25,"doubles":30, "available": false},
+  {"name":"Gert Moerenhout","singles":25,"doubles":25, "available":  true},
+  {"name":"Kristof","singles":15,"doubles":15, "available":  true},
+  {"name":"Geert Tambuyser","singles":10,"doubles":10, "available": false},
+  {"name":"Denis","singles":10,"doubles":15, "available":  true},
+  {"name":"Michel","singles":10,"doubles":10, "available":  true},
+  {"name":"Ronny Vande Weghe","singles":5,"doubles":5, "available":  true}
+]

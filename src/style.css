@@ -158,7 +158,7 @@ section label input {
   color: #fff;
 }
 
-.hidden {
+.tab-panel.hidden {
   display: none;
 }
 
