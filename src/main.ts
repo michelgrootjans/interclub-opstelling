@@ -81,6 +81,7 @@ function renderPlayers(): void {
 
 function renderCompositions(): void {
   const compositions = findSingleCompositions(players, limit)
+    .sort((a, b) => b.total - a.total)
   if (compositions.length === 0) {
     compositionsList.innerHTML = '<p>Geen geldige opstellingen.</p>'
     return
@@ -89,7 +90,7 @@ function renderCompositions(): void {
     .map(c => `
       <div class="composition">
         <strong>Totaal: ${c.total}</strong>
-        <ul>${c.players.map(p => `<li>${p.name} (${p.singles})</li>`).join('')}</ul>
+        <ul>${[...c.players].sort((a, b) => b.singles - a.singles).map(p => `<li>${p.name} (${p.singles})</li>`).join('')}</ul>
       </div>
     `)
     .join('')
