@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite'
 
 export default defineConfig({
-  // Change this to match your GitHub repository name
-  base: '/tennis-rankings/',
+  base: '/interclub-opstelling/',
 })
