@@ -127,13 +127,18 @@ button {
   gap: 0.25rem;
 }
 
-#players-ul button {
+.btn-icon {
   background: none;
-  color: #dc2626;
-  padding: 0.25rem 0.5rem;
+  font-size: 1.2rem;
+  padding: 0;
   min-height: 44px;
   min-width: 44px;
+  color: #6b7280;
 }
+
+.btn-toggle.on  { color: #16a34a; }
+.btn-toggle.off { color: #d1d5db; }
+.btn-delete     { color: #dc2626; }
 
 #players-ul button[data-toggle] {
   color: #6b7280;

@@ -1,4 +1,5 @@
 import './style.css'
+import '@fortawesome/fontawesome-free/css/all.min.css'
 import { findDoubleCompositions, findSingleCompositions, type Composition, type Player as BasePlayer } from './logic/compositions'
 
 type Player = BasePlayer & { available: boolean }
@@ -114,11 +115,11 @@ function renderPlayers(): void {
       </li>
     ` : `
       <li class="${p.available ? '' : 'unavailable'}">
+        <button class="btn-icon btn-toggle ${p.available ? 'on' : 'off'}" data-toggle="${i}"><i class="fa-solid fa-toggle-${p.available ? 'on' : 'off'}"></i></button>
         <span>${p.name} ${p.singles}/${p.doubles}</span>
         <span class="player-actions">
-          <button data-edit="${i}">Bewerk</button>
-          <button data-toggle="${i}">${p.available ? 'Afwezig' : 'Beschikbaar'}</button>
-          <button data-index="${i}">Verwijder</button>
+          <button class="btn-icon" data-edit="${i}"><i class="fa-solid fa-pen"></i></button>
+          <button class="btn-icon btn-delete" data-index="${i}"><i class="fa-solid fa-trash-can"></i></button>
         </span>
       </li>
     `)
