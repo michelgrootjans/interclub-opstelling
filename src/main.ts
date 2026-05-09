@@ -74,7 +74,9 @@ limitInput.value = String(limit)
 
 function renderPlayers(): void {
   playersUl.innerHTML = players
-    .map((p, i) => `
+    .map((p, i) => ({ p, i }))
+    .sort((a, b) => b.p.singles - a.p.singles)
+    .map(({ p, i }) => `
       <li class="${p.available ? '' : 'unavailable'}">
         <span>${p.name} ${p.singles}/${p.doubles}</span>
         <span class="player-actions">
