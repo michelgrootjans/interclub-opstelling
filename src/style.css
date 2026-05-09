@@ -1,0 +1,152 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  background: #f5f5f5;
+  color: #1a1a1a;
+}
+
+#app {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+h1 {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+h2 {
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+}
+
+section {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+#players-ul:not(:empty) + details {
+  margin-top: 0.75rem;
+  border-top: 1px solid #eee;
+  padding-top: 0.75rem;
+}
+
+summary {
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.25rem 0;
+  user-select: none;
+}
+
+#player-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+input[type="text"],
+input[type="number"] {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  appearance: none;
+}
+
+button {
+  padding: 0.65rem 1rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+#player-form button[type="submit"] {
+  background: #2563eb;
+  color: #fff;
+  width: 100%;
+}
+
+#player-form button[type="submit"]:active {
+  background: #1d4ed8;
+}
+
+#players-ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+#players-ul li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+#players-ul li:last-child {
+  border-bottom: none;
+}
+
+#players-ul button {
+  background: none;
+  color: #dc2626;
+  padding: 0.25rem 0.5rem;
+  min-height: 44px;
+  min-width: 44px;
+}
+
+#compositions label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+#compositions label input {
+  width: 6rem;
+}
+
+#compositions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.composition {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 0.75rem;
+}
+
+.composition strong {
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+.composition ul {
+  list-style: none;
+  padding-left: 0.25rem;
+}
+
+.composition ul li {
+  padding: 0.15rem 0;
+  color: #374151;
+}

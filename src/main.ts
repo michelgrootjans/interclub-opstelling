@@ -1,3 +1,4 @@
+import './style.css'
 import { findSingleCompositions } from './logic/compositions'
 
 type Player = {
@@ -36,19 +37,18 @@ const app = document.getElementById('app')!
 app.innerHTML = `
   <h1>Interclub Planning</h1>
 
-  <section id="add-player">
-    <h2>Speler toevoegen</h2>
-    <form id="player-form">
-      <input id="input-name"    type="text"   placeholder="Naam"            required />
-      <input id="input-singles" type="number" placeholder="Singles ranking" required min="1" />
-      <input id="input-doubles" type="number" placeholder="Doubles ranking" required min="1" />
-      <button type="submit">Toevoegen</button>
-    </form>
-  </section>
-
   <section id="player-list">
     <h2>Spelers</h2>
     <ul id="players-ul"></ul>
+    <details>
+      <summary>Speler toevoegen</summary>
+      <form id="player-form">
+        <input id="input-name"    type="text"   placeholder="Naam"            required />
+        <input id="input-singles" type="number" placeholder="Singles ranking" required min="1" />
+        <input id="input-doubles" type="number" placeholder="Doubles ranking" required min="1" />
+        <button type="submit">Toevoegen</button>
+      </form>
+    </details>
   </section>
 
   <section id="compositions">
@@ -72,7 +72,7 @@ function renderPlayers(): void {
   playersUl.innerHTML = players
     .map((p, i) => `
       <li>
-        ${p.name} (S:${p.singles} / D:${p.doubles})
+        ${p.name} ${p.singles}/${p.doubles}
         <button data-index="${i}">Verwijder</button>
       </li>
     `)
