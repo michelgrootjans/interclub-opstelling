@@ -51,10 +51,10 @@ app.innerHTML = `
   </section>
 
   <section id="compositions">
-    <label>Limiet: <input id="input-limit" type="number" min="1" /></label>
+    <label>Serie<input id="input-limit" type="number" min="1" /></label>
     <div class="tabs">
-      <button class="tab active" data-tab="singles">Singles</button>
-      <button class="tab" data-tab="doubles">Dubbel</button>
+      <button class="tab active" data-tab="singles">Enkels</button>
+      <button class="tab" data-tab="doubles">Dubbels</button>
     </div>
     <div id="singles-compositions-list" class="tab-panel"></div>
     <div id="doubles-compositions-list" class="tab-panel hidden"></div>
@@ -172,6 +172,15 @@ playersUl.addEventListener('click', e => {
     savePlayers(players)
     update()
   }
+})
+
+document.querySelector('.tabs')!.addEventListener('click', e => {
+  const tab = (e.target as HTMLElement).closest<HTMLElement>('.tab')
+  if (!tab) return
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'))
+  tab.classList.add('active')
+  document.getElementById(`${tab.dataset.tab}-compositions-list`)!.classList.remove('hidden')
 })
 
 limitInput.addEventListener('input', () => {
