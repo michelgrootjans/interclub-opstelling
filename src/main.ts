@@ -96,14 +96,27 @@ const doublesCompositionsList = document.getElementById('doubles-compositions-li
 
 limitInput.value = String(limit)
 
+let editingIndex: number | null = null
+
 function renderPlayers(): void {
   playersUl.innerHTML = players
     .map((p, i) => ({ p, i }))
     .sort((a, b) => b.p.singles - a.p.singles)
-    .map(({ p, i }) => `
+    .map(({ p, i }) => i === editingIndex ? `
+      <li class="editing">
+        <input class="edit-name"    value="${p.name}"    type="text"   />
+        <input class="edit-singles" value="${p.singles}" type="number" min="1" />
+        <input class="edit-doubles" value="${p.doubles}" type="number" min="1" />
+        <span class="player-actions">
+          <button data-save="${i}">Opslaan</button>
+          <button data-cancel>Annuleer</button>
+        </span>
+      </li>
+    ` : `
       <li class="${p.available ? '' : 'unavailable'}">
         <span>${p.name} ${p.singles}/${p.doubles}</span>
         <span class="player-actions">
+          <button data-edit="${i}">Bewerk</button>
           <button data-toggle="${i}">${p.available ? 'Afwezig' : 'Beschikbaar'}</button>
           <button data-index="${i}">Verwijder</button>
         </span>
@@ -187,7 +200,23 @@ form.addEventListener('submit', e => {
 
 playersUl.addEventListener('click', e => {
   const btn = e.target as HTMLElement
-  if (btn.dataset.index !== undefined) {
+  if (btn.dataset.edit !== undefined) {
+    editingIndex = parseInt(btn.dataset.edit)
+    renderPlayers()
+  } else if (btn.dataset.cancel !== undefined) {
+    editingIndex = null
+    renderPlayers()
+  } else if (btn.dataset.save !== undefined) {
+    const index = parseInt(btn.dataset.save)
+    const li = btn.closest('li')!
+    const name    = (li.querySelector('.edit-name')    as HTMLInputElement).value.trim()
+    const singles = parseInt((li.querySelector('.edit-singles') as HTMLInputElement).value)
+    const doubles = parseInt((li.querySelector('.edit-doubles') as HTMLInputElement).value)
+    players = players.map((p, i) => i === index ? { ...p, name, singles, doubles } : p)
+    savePlayers(players)
+    editingIndex = null
+    update()
+  } else if (btn.dataset.index !== undefined) {
     const index = parseInt(btn.dataset.index)
     players = players.filter((_, i) => i !== index)
     savePlayers(players)

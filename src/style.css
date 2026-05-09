@@ -108,6 +108,20 @@ button {
   border-bottom: none;
 }
 
+#players-ul li.editing {
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+#players-ul li.editing input {
+  flex: 1;
+  min-width: 4rem;
+  padding: 0.4rem 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
 .player-actions {
   display: flex;
   gap: 0.25rem;
