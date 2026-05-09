@@ -75,13 +75,16 @@ app.innerHTML = `
   </section>
 
   <section id="compositions">
-    <label>Serie<input id="input-limit" type="number" min="1" /></label>
-    <div class="tabs">
-      <button class="tab active" data-tab="singles">Enkels</button>
-      <button class="tab" data-tab="doubles">Dubbels</button>
-    </div>
-    <div id="singles-compositions-list" class="tab-panel"></div>
-    <div id="doubles-compositions-list" class="tab-panel hidden"></div>
+    <details id="compositions-details" open>
+      <summary>Opstellingen</summary>
+      <label>Serie<input id="input-limit" type="number" min="1" /></label>
+      <div class="tabs">
+        <button class="tab active" data-tab="singles">Enkels</button>
+        <button class="tab" data-tab="doubles">Dubbels</button>
+      </div>
+      <div id="singles-compositions-list" class="tab-panel"></div>
+      <div id="doubles-compositions-list" class="tab-panel hidden"></div>
+    </details>
   </section>
 `
 
@@ -108,6 +111,16 @@ function hideAddForm(): void {
 }
 
 hideAddForm()
+
+const playerDetails = document.querySelector('#player-list details') as HTMLDetailsElement
+const compositionsDetails = document.getElementById('compositions-details') as HTMLDetailsElement
+
+playerDetails.addEventListener('toggle', () => {
+  if (playerDetails.open) compositionsDetails.open = false
+})
+compositionsDetails.addEventListener('toggle', () => {
+  if (compositionsDetails.open) playerDetails.open = false
+})
 
 btnAddPlayer.addEventListener('click', showAddForm)
 document.getElementById('btn-cancel-add')!.addEventListener('click', hideAddForm)
@@ -217,7 +230,8 @@ form.addEventListener('submit', e => {
 })
 
 playersUl.addEventListener('click', e => {
-  const btn = e.target as HTMLElement
+  const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-edit],[data-cancel],[data-save],[data-index],[data-toggle]')
+  if (!btn) return
   if (btn.dataset.edit !== undefined) {
     editingIndex = parseInt(btn.dataset.edit)
     renderPlayers()
