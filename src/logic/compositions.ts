@@ -9,11 +9,14 @@ type SinglesComposition = {
   players: Player[]
 }
 
-export function findSingleCompositions(players: Player[], _limit: number): SinglesComposition[] {
+export function findSingleCompositions(players: Player[], limit: number): SinglesComposition[] {
   if(players.length < 4) return []
+  const total = players.reduce((sum, player) => sum + player.singles, 0);
+
+  if(total > limit) return []
 
   return [{
-    total: players.reduce((sum, player) => sum + player.singles, 0),
+    total: total,
     players: players
   }
   ]
