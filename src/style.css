@@ -35,7 +35,7 @@ section {
   margin-bottom: 1rem;
 }
 
-#players-ul:not(:empty) + details {
+#player-list details + details {
   margin-top: 0.75rem;
   border-top: 1px solid #eee;
   padding-top: 0.75rem;
@@ -85,6 +85,10 @@ button {
   background: #1d4ed8;
 }
 
+#players-ul:not(:empty) {
+  margin-top: 0.75rem;
+}
+
 #players-ul {
   list-style: none;
   display: flex;
@@ -104,12 +108,25 @@ button {
   border-bottom: none;
 }
 
+.player-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
 #players-ul button {
   background: none;
   color: #dc2626;
   padding: 0.25rem 0.5rem;
   min-height: 44px;
   min-width: 44px;
+}
+
+#players-ul button[data-toggle] {
+  color: #6b7280;
+}
+
+#players-ul li.unavailable {
+  opacity: 0.45;
 }
 
 #compositions label {

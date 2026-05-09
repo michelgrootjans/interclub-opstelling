@@ -5,6 +5,7 @@ type Player = {
   name: string
   singles: number
   doubles: number
+  available: boolean
 }
 
 const PLAYERS_KEY = 'tennis-players'
@@ -13,7 +14,8 @@ const DEFAULT_LIMIT = 140
 
 function loadPlayers(): Player[] {
   const stored = localStorage.getItem(PLAYERS_KEY)
-  return stored ? JSON.parse(stored) : []
+  if (!stored) return []
+  return (JSON.parse(stored) as Player[]).map(p => ({ ...p, available: p.available ?? true }))
 }
 
 function savePlayers(players: Player[]): void {
@@ -38,8 +40,10 @@ app.innerHTML = `
   <h1>Interclub Planning</h1>
 
   <section id="player-list">
-    <h2>Spelers</h2>
-    <ul id="players-ul"></ul>
+    <details open>
+      <summary>Spelers</summary>
+      <ul id="players-ul"></ul>
+    </details>
     <details>
       <summary>Speler toevoegen</summary>
       <form id="player-form">
@@ -71,9 +75,12 @@ limitInput.value = String(limit)
 function renderPlayers(): void {
   playersUl.innerHTML = players
     .map((p, i) => `
-      <li>
-        ${p.name} ${p.singles}/${p.doubles}
-        <button data-index="${i}">Verwijder</button>
+      <li class="${p.available ? '' : 'unavailable'}">
+        <span>${p.name} ${p.singles}/${p.doubles}</span>
+        <span class="player-actions">
+          <button data-toggle="${i}">${p.available ? 'Afwezig' : 'Beschikbaar'}</button>
+          <button data-index="${i}">Verwijder</button>
+        </span>
       </li>
     `)
     .join('')
@@ -100,7 +107,7 @@ function groupCompositions(compositions: ReturnType<typeof findSingleComposition
 }
 
 function renderCompositions(): void {
-  const compositions = findSingleCompositions(players, limit)
+  const compositions = findSingleCompositions(players.filter(p => p.available), limit)
     .sort((a, b) => b.total - a.total)
   if (compositions.length === 0) {
     compositionsList.innerHTML = '<p>Geen geldige opstellingen.</p>'
@@ -127,6 +134,7 @@ form.addEventListener('submit', e => {
     name: nameInput.value.trim(),
     singles: parseInt(singlesInput.value),
     doubles: parseInt(doublesInput.value),
+    available: true,
   }]
   savePlayers(players)
   form.reset()
@@ -134,12 +142,18 @@ form.addEventListener('submit', e => {
 })
 
 playersUl.addEventListener('click', e => {
-  const btn = (e.target as HTMLElement).closest('button[data-index]')
-  if (!btn) return
-  const index = parseInt((btn as HTMLElement).dataset.index!)
-  players = players.filter((_, i) => i !== index)
-  savePlayers(players)
-  update()
+  const btn = e.target as HTMLElement
+  if (btn.dataset.index !== undefined) {
+    const index = parseInt(btn.dataset.index)
+    players = players.filter((_, i) => i !== index)
+    savePlayers(players)
+    update()
+  } else if (btn.dataset.toggle !== undefined) {
+    const index = parseInt(btn.dataset.toggle)
+    players = players.map((p, i) => i === index ? { ...p, available: !p.available } : p)
+    savePlayers(players)
+    update()
+  }
 })
 
 limitInput.addEventListener('input', () => {
