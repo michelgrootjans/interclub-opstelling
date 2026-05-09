@@ -35,10 +35,24 @@ section {
   margin-bottom: 1rem;
 }
 
-#player-list details + details {
+.btn-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
   margin-top: 0.75rem;
-  border-top: 1px solid #eee;
-  padding-top: 0.75rem;
+  padding: 0.5rem;
+  font-size: 1.5rem;
+  background: none;
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  color: #9ca3af;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.btn-add:active {
+  background: #f3f4f6;
 }
 
 summary {
@@ -55,6 +69,7 @@ summary {
   gap: 0.5rem;
   margin-top: 0.75rem;
 }
+
 
 input[type="text"],
 input[type="number"] {

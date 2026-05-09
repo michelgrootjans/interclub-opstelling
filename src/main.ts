@@ -60,17 +60,16 @@ app.innerHTML = `
   <h1>Interclub Planning</h1>
 
   <section id="player-list">
-    <details open>
+    <details>
       <summary>Spelers</summary>
       <ul id="players-ul"></ul>
-    </details>
-    <details>
-      <summary>Speler toevoegen</summary>
+      <button id="btn-add-player" class="btn-add"><i class="fa-solid fa-plus"></i></button>
       <form id="player-form">
         <input id="input-name"    type="text"   placeholder="Naam"            required />
-        <input id="input-singles" type="number" placeholder="Singles ranking" required min="1" />
-        <input id="input-doubles" type="number" placeholder="Doubles ranking" required min="1" />
+        <input id="input-singles" type="number" placeholder="Enkel klassemtn" required min="1" />
+        <input id="input-doubles" type="number" placeholder="Dubbel klassement" required min="1" />
         <button type="submit">Toevoegen</button>
+        <button type="button" id="btn-cancel-add">Annuleer</button>
       </form>
     </details>
   </section>
@@ -92,8 +91,26 @@ const singlesInput = document.getElementById('input-singles') as HTMLInputElemen
 const doublesInput = document.getElementById('input-doubles') as HTMLInputElement
 const limitInput = document.getElementById('input-limit') as HTMLInputElement
 const playersUl = document.getElementById('players-ul')!
+const btnAddPlayer = document.getElementById('btn-add-player')!
 const singlesCompositionsList = document.getElementById('singles-compositions-list')!
 const doublesCompositionsList = document.getElementById('doubles-compositions-list')!
+
+function showAddForm(): void {
+  form.style.display = 'flex'
+  btnAddPlayer.style.display = 'none'
+  nameInput.focus()
+}
+
+function hideAddForm(): void {
+  form.style.display = 'none'
+  btnAddPlayer.style.display = ''
+  form.reset()
+}
+
+hideAddForm()
+
+btnAddPlayer.addEventListener('click', showAddForm)
+document.getElementById('btn-cancel-add')!.addEventListener('click', hideAddForm)
 
 limitInput.value = String(limit)
 
@@ -195,7 +212,7 @@ form.addEventListener('submit', e => {
     available: true,
   }]
   savePlayers(players)
-  form.reset()
+  hideAddForm()
   update()
 })
 
