@@ -59,32 +59,31 @@ const app = document.getElementById('app')!
 app.innerHTML = `
   <h1>Interclub Planning</h1>
 
-  <section id="player-list">
-    <details>
-      <summary>Spelers</summary>
-      <ul id="players-ul"></ul>
-      <button id="btn-add-player" class="btn-add"><i class="fa-solid fa-plus"></i></button>
-      <form id="player-form">
-        <input id="input-name"    type="text"   placeholder="Naam"            required />
-        <input id="input-singles" type="number" placeholder="Enkel klassemtn" required min="1" />
-        <input id="input-doubles" type="number" placeholder="Dubbel klassement" required min="1" />
-        <button type="submit">Toevoegen</button>
-        <button type="button" id="btn-cancel-add">Annuleer</button>
-      </form>
-    </details>
+  <div class="main-tabs">
+    <button class="main-tab" data-panel="player-list">Spelers</button>
+    <button class="main-tab active" data-panel="compositions">Opstellingen</button>
+  </div>
+
+  <section id="player-list" class="panel hidden">
+    <ul id="players-ul"></ul>
+    <button id="btn-add-player" class="btn-add"><i class="fa-solid fa-plus"></i></button>
+    <form id="player-form">
+      <input id="input-name"    type="text"   placeholder="Naam"            required />
+      <input id="input-singles" type="number" placeholder="Enkel klassemtn" required min="1" />
+      <input id="input-doubles" type="number" placeholder="Dubbel klassement" required min="1" />
+      <button type="submit">Toevoegen</button>
+      <button type="button" id="btn-cancel-add">Annuleer</button>
+    </form>
   </section>
 
-  <section id="compositions">
-    <details id="compositions-details" open>
-      <summary>Opstellingen</summary>
-      <label>Serie<input id="input-limit" type="number" min="1" /></label>
-      <div class="tabs">
-        <button class="tab active" data-tab="singles">Enkels</button>
-        <button class="tab" data-tab="doubles">Dubbels</button>
-      </div>
-      <div id="singles-compositions-list" class="tab-panel"></div>
-      <div id="doubles-compositions-list" class="tab-panel hidden"></div>
-    </details>
+  <section id="compositions" class="panel">
+    <label>Serie<input id="input-limit" type="number" min="1" /></label>
+    <div class="tabs">
+      <button class="tab active" data-tab="singles">Enkels</button>
+      <button class="tab" data-tab="doubles">Dubbels</button>
+    </div>
+    <div id="singles-compositions-list" class="tab-panel"></div>
+    <div id="doubles-compositions-list" class="tab-panel hidden"></div>
   </section>
 `
 
@@ -111,16 +110,6 @@ function hideAddForm(): void {
 }
 
 hideAddForm()
-
-const playerDetails = document.querySelector('#player-list details') as HTMLDetailsElement
-const compositionsDetails = document.getElementById('compositions-details') as HTMLDetailsElement
-
-playerDetails.addEventListener('toggle', () => {
-  if (playerDetails.open) compositionsDetails.open = false
-})
-compositionsDetails.addEventListener('toggle', () => {
-  if (compositionsDetails.open) playerDetails.open = false
-})
 
 btnAddPlayer.addEventListener('click', showAddForm)
 document.getElementById('btn-cancel-add')!.addEventListener('click', hideAddForm)
@@ -268,6 +257,15 @@ document.querySelector('.tabs')!.addEventListener('click', e => {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'))
   tab.classList.add('active')
   document.getElementById(`${tab.dataset.tab}-compositions-list`)!.classList.remove('hidden')
+})
+
+document.querySelector('.main-tabs')!.addEventListener('click', e => {
+  const tab = (e.target as HTMLElement).closest<HTMLElement>('.main-tab')
+  if (!tab) return
+  document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'))
+  document.querySelectorAll('.panel').forEach(p => p.classList.add('hidden'))
+  tab.classList.add('active')
+  document.getElementById(tab.dataset.panel!)!.classList.remove('hidden')
 })
 
 limitInput.addEventListener('input', () => {
