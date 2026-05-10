@@ -59,11 +59,6 @@ const app = document.getElementById('app')!
 app.innerHTML = `
   <h1>Interclub Planning</h1>
 
-  <div class="main-tabs">
-    <button class="main-tab active" data-panel="player-list">Spelers</button>
-    <button class="main-tab" data-panel="compositions">Opstellingen</button>
-  </div>
-
   <section id="player-list" class="panel">
     <ul id="players-ul"></ul>
     <button id="btn-add-player" class="btn-add"><i class="fa-solid fa-plus"></i></button>
@@ -85,6 +80,17 @@ app.innerHTML = `
     <div id="singles-compositions-list" class="tab-panel"></div>
     <div id="doubles-compositions-list" class="tab-panel hidden"></div>
   </section>
+
+  <nav class="main-tabs">
+    <button class="main-tab active" data-panel="player-list">
+      <i class="fa-solid fa-users"></i>
+      <span>Spelers</span>
+    </button>
+    <button class="main-tab" data-panel="compositions">
+      <i class="fa-solid fa-clipboard-list"></i>
+      <span>Opstellingen</span>
+    </button>
+  </nav>
 `
 
 const form = document.getElementById('player-form') as HTMLFormElement
