@@ -72,18 +72,20 @@ app.innerHTML = `
   </section>
 
   <section id="player-list" class="panel hidden">
+    <div id="add-player-area">
+      <button id="btn-add-player" class="btn-add"><i class="fa-solid fa-plus"></i></button>
+      <form id="player-form">
+        <div class="autocomplete">
+          <input id="input-name" type="text" placeholder="Naam" required autocomplete="off" />
+          <ul id="name-suggestions" class="suggestions hidden"></ul>
+        </div>
+        <input id="input-singles" type="number" placeholder="Enkel klassemtn" required min="1" />
+        <input id="input-doubles" type="number" placeholder="Dubbel klassement" required min="1" />
+        <button type="submit">Toevoegen</button>
+        <button type="button" id="btn-cancel-add">Annuleer</button>
+      </form>
+    </div>
     <ul id="players-ul"></ul>
-    <button id="btn-add-player" class="btn-add"><i class="fa-solid fa-plus"></i></button>
-    <form id="player-form">
-      <div class="autocomplete">
-        <input id="input-name" type="text" placeholder="Naam" required autocomplete="off" />
-        <ul id="name-suggestions" class="suggestions hidden"></ul>
-      </div>
-      <input id="input-singles" type="number" placeholder="Enkel klassemtn" required min="1" />
-      <input id="input-doubles" type="number" placeholder="Dubbel klassement" required min="1" />
-      <button type="submit">Toevoegen</button>
-      <button type="button" id="btn-cancel-add">Annuleer</button>
-    </form>
   </section>
 
   <nav class="main-tabs">
