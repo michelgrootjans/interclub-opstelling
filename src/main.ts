@@ -1,7 +1,7 @@
 import './style.css'
 import '@fortawesome/fontawesome-free/css/all.min.css'
 import { findDoubleCompositions, findSingleCompositions, groupCompositions, type Composition, type Player as BasePlayer } from './logic/compositions'
-import { formatName } from './logic/formatName'
+import { mapSuggestion, mapMemberDetails, type Suggestion } from './logic/tennisstats'
 
 type Player = BasePlayer & { available: boolean }
 
@@ -28,7 +28,6 @@ function saveLimit(limit: number): void {
   localStorage.setItem(LIMIT_KEY, String(limit))
 }
 
-interface Suggestion { id: string; name: string; club: string; singles: number }
 
 
 async function searchMembers(query: string): Promise<Suggestion[]> {
@@ -36,12 +35,7 @@ async function searchMembers(query: string): Promise<Suggestion[]> {
     const res = await fetch(`https://tennisstats.be/api/list_users?s=${encodeURIComponent(query)}`)
     if (!res.ok) return []
     const data = await res.json() as Array<Record<string, unknown>>
-    return data.map(u => ({
-      id: String(u['id'] ?? ''),
-      name: formatName(String(u['name'] ?? '')),
-      club: String(u['name_club'] ?? ''),
-      singles: Number(u['singles'] ?? 0),
-    }))
+    return data.map(mapSuggestion)
   } catch {
     return []
   }
@@ -52,10 +46,7 @@ async function fetchMemberDetails(id: string): Promise<{ singles: number; double
     const res = await fetch(`https://tennisstats.be/api/get_user_report/${id}`)
     if (!res.ok) return null
     const data = await res.json() as Record<string, Record<string, unknown>>
-    return {
-      singles: Number(data['singles']['current_rank'] ?? 0),
-      doubles: Number(data['doubles']['current_rank'] ?? 0),
-    }
+    return mapMemberDetails(data)
   } catch {
     return null
   }
