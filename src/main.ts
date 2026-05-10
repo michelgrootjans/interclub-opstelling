@@ -65,32 +65,8 @@ async function fetchMemberDetails(id: string): Promise<{ singles: number; double
   }
 }
 
-async function loadPreset(name: string): Promise<Player[] | null> {
-  try {
-    const res = await fetch(`${import.meta.env.BASE_URL}presets/${name}.json`)
-    if (!res.ok) return null
-    const data = await res.json() as (BasePlayer & { available?: boolean })[]
-    return data.map(p => ({ ...p, available: p.available ?? false }))
-  } catch {
-    return null
-  }
-}
-
 let players: Player[] = loadPlayers()
 let limit: number = loadLimit()
-
-const params = new URLSearchParams(location.search)
-const preset = params.get('preset')
-if (preset) {
-  const presetPlayers = await loadPreset(preset)
-  if (presetPlayers) {
-    players = presetPlayers
-    savePlayers(players)
-  }
-  params.delete('preset')
-  const newUrl = location.pathname + (params.size ? '?' + params.toString() : '')
-  location.replace(newUrl)
-}
 
 const app = document.getElementById('app')!
 
