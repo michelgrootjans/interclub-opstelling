@@ -27,6 +27,44 @@ function saveLimit(limit: number): void {
   localStorage.setItem(LIMIT_KEY, String(limit))
 }
 
+interface Suggestion { id: string; name: string; club: string; singles: number }
+
+function formatName(apiName: string): string {
+  const words = apiName.trim().split(' ')
+  if (words.length < 2) return apiName
+  return `${words[words.length - 1]} ${words.slice(0, -1).join(' ')}`
+}
+
+async function searchMembers(query: string): Promise<Suggestion[]> {
+  try {
+    const res = await fetch(`https://tennisstats.be/api/list_users?s=${encodeURIComponent(query)}`)
+    if (!res.ok) return []
+    const data = await res.json() as Array<Record<string, unknown>>
+    return data.map(u => ({
+      id: String(u['id'] ?? ''),
+      name: formatName(String(u['name'] ?? '')),
+      club: String(u['name_club'] ?? ''),
+      singles: Number(u['singles'] ?? 0),
+    }))
+  } catch {
+    return []
+  }
+}
+
+async function fetchMemberDetails(id: string): Promise<{ singles: number; doubles: number } | null> {
+  try {
+    const res = await fetch(`https://tennisstats.be/api/get_user_report/${id}`)
+    if (!res.ok) return null
+    const data = await res.json() as Record<string, Record<string, unknown>>
+    return {
+      singles: Number(data['singles']['current_rank'] ?? 0),
+      doubles: Number(data['doubles']['current_rank'] ?? 0),
+    }
+  } catch {
+    return null
+  }
+}
+
 async function loadPreset(name: string): Promise<Player[] | null> {
   try {
     const res = await fetch(`${import.meta.env.BASE_URL}presets/${name}.json`)
@@ -74,7 +112,10 @@ app.innerHTML = `
     <ul id="players-ul"></ul>
     <button id="btn-add-player" class="btn-add"><i class="fa-solid fa-plus"></i></button>
     <form id="player-form">
-      <input id="input-name"    type="text"   placeholder="Naam"            required />
+      <div class="autocomplete">
+        <input id="input-name" type="text" placeholder="Naam" required autocomplete="off" />
+        <ul id="name-suggestions" class="suggestions hidden"></ul>
+      </div>
       <input id="input-singles" type="number" placeholder="Enkel klassemtn" required min="1" />
       <input id="input-doubles" type="number" placeholder="Dubbel klassement" required min="1" />
       <button type="submit">Toevoegen</button>
@@ -107,6 +148,7 @@ const playersUl = document.getElementById('players-ul')!
 const btnAddPlayer = document.getElementById('btn-add-player')!
 const singlesCompositionsList = document.getElementById('singles-compositions-list')!
 const doublesCompositionsList = document.getElementById('doubles-compositions-list')!
+const suggestionsList = document.getElementById('name-suggestions') as HTMLUListElement
 
 function showAddForm(): void {
   form.style.display = 'flex'
@@ -121,6 +163,51 @@ function hideAddForm(): void {
 }
 
 hideAddForm()
+
+let suggestions: Suggestion[] = []
+let searchTimeout: ReturnType<typeof setTimeout> | null = null
+
+function showSuggestions(items: Suggestion[]): void {
+  suggestions = items
+  if (items.length === 0) { suggestionsList.classList.add('hidden'); return }
+  suggestionsList.innerHTML = items.map((s, i) => `<li data-index="${i}"><span class="suggestion-name">${s.name}</span><span class="suggestion-meta">${s.club} · ${s.singles}</span></li>`).join('')
+  suggestionsList.classList.remove('hidden')
+}
+
+function hideSuggestions(): void {
+  suggestionsList.classList.add('hidden')
+  suggestions = []
+}
+
+async function selectSuggestion(index: number): Promise<void> {
+  const s = suggestions[index]
+  if (!s) return
+  nameInput.value = s.name
+  hideSuggestions()
+  const details = await fetchMemberDetails(s.id)
+  if (details) {
+    singlesInput.value = String(details.singles)
+    doublesInput.value = String(details.doubles)
+  }
+}
+
+nameInput.addEventListener('input', () => {
+  const query = nameInput.value.trim()
+  if (searchTimeout) clearTimeout(searchTimeout)
+  if (query.length < 2) { hideSuggestions(); return }
+  searchTimeout = setTimeout(() => {
+    searchMembers(query).then(showSuggestions)
+  }, 300)
+})
+
+nameInput.addEventListener('blur', () => setTimeout(hideSuggestions, 150))
+
+suggestionsList.addEventListener('mousedown', e => {
+  const li = (e.target as HTMLElement).closest<HTMLElement>('li[data-index]')
+  if (!li) return
+  e.preventDefault()
+  selectSuggestion(parseInt(li.dataset.index!))
+})
 
 btnAddPlayer.addEventListener('click', showAddForm)
 document.getElementById('btn-cancel-add')!.addEventListener('click', hideAddForm)
