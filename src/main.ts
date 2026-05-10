@@ -1,6 +1,7 @@
 import './style.css'
 import '@fortawesome/fontawesome-free/css/all.min.css'
-import { findDoubleCompositions, findSingleCompositions, type Composition, type Player as BasePlayer } from './logic/compositions'
+import { findDoubleCompositions, findSingleCompositions, groupCompositions, type Composition, type Player as BasePlayer } from './logic/compositions'
+import { formatName } from './logic/formatName'
 
 type Player = BasePlayer & { available: boolean }
 
@@ -29,11 +30,6 @@ function saveLimit(limit: number): void {
 
 interface Suggestion { id: string; name: string; club: string; singles: number }
 
-function formatName(apiName: string): string {
-  const words = apiName.trim().split(' ')
-  if (words.length < 2) return apiName
-  return `${words[words.length - 1]} ${words.slice(0, -1).join(' ')}`
-}
 
 async function searchMembers(query: string): Promise<Suggestion[]> {
   try {
@@ -219,28 +215,6 @@ function renderPlayers(): void {
     .join('')
 }
 
-type Slot = { ranking: number; names: string[] }
-type MergedComposition = { total: number; slots: Slot[] }
-
-function groupCompositions(
-  compositions: Composition[],
-  ranking: (p: BasePlayer) => number
-): MergedComposition[] {
-  const groups = new Map<string, MergedComposition>()
-  for (const comp of compositions) {
-    const sorted = [...comp.players].sort((a, b) => ranking(b) - ranking(a))
-    const key = `${comp.total}_${sorted.map(p => ranking(p)).join('_')}`
-    if (!groups.has(key)) {
-      groups.set(key, { total: comp.total, slots: sorted.map(p => ({ ranking: ranking(p), names: [p.name] })) })
-    } else {
-      sorted.forEach((p, i) => {
-        const slot = groups.get(key)!.slots[i]
-        if (!slot.names.includes(p.name)) slot.names.push(p.name)
-      })
-    }
-  }
-  return [...groups.values()]
-}
 
 function renderCompositions(
   container: HTMLElement,

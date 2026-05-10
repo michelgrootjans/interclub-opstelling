@@ -1,5 +1,5 @@
 import {describe, expect, it} from 'vitest'
-import {findDoubleCompositions, findSingleCompositions} from './compositions'
+import {findDoubleCompositions, findSingleCompositions, groupCompositions} from './compositions'
 
 const alice_60_50 = {name: 'Alice', singles: 60, doubles: 50}
 const bob_45_40   = {name: 'Bob',   singles: 45, doubles: 40}
@@ -78,5 +78,51 @@ describe('findDoubleCompositions', () => {
             total: 50 + 40 + 20 + 15,
             players,
         }])
+    })
+})
+
+describe('groupCompositions', () => {
+    const p60a = {name: 'Alice', singles: 60, doubles: 50}
+    const p60b = {name: 'Bob',   singles: 60, doubles: 50}
+    const p40a = {name: 'Carol', singles: 40, doubles: 30}
+    const p40b = {name: 'Dave',  singles: 40, doubles: 30}
+    const p30  = {name: 'Eve',   singles: 30, doubles: 20}
+
+    it('returns one group per composition when rankings differ', () => {
+        const compositions = [
+            {total: 100, players: [p60a, p40a]},
+            {total: 90,  players: [p60b, p30]},
+        ]
+        expect(groupCompositions(compositions, p => p.singles)).toHaveLength(2)
+    })
+
+    it('merges compositions with the same total and same ranking pattern', () => {
+        const compositions = [
+            {total: 100, players: [p60a, p40a]},
+            {total: 100, players: [p60b, p40b]},
+        ]
+        expect(groupCompositions(compositions, p => p.singles)).toEqual([
+            {total: 100, slots: [
+                {ranking: 60, names: ['Alice', 'Bob']},
+                {ranking: 40, names: ['Carol', 'Dave']},
+            ]},
+        ])
+    })
+
+    it('keeps compositions separate when totals differ', () => {
+        const compositions = [
+            {total: 100, players: [p60a, p40a]},
+            {total: 90,  players: [p60b, p30]},
+        ]
+        const result = groupCompositions(compositions, p => p.singles)
+        expect(result).toHaveLength(2)
+        expect(result.map(g => g.total)).toEqual([100, 90])
+    })
+
+    it('sorts slots by ranking descending', () => {
+        const compositions = [{total: 100, players: [p40a, p60a]}]
+        const [{slots}] = groupCompositions(compositions, p => p.singles)
+        expect(slots[0].ranking).toBe(60)
+        expect(slots[1].ranking).toBe(40)
     })
 })

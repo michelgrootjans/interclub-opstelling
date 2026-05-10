@@ -32,3 +32,26 @@ export function findSingleCompositions(players: Player[], limit: number): Compos
 export function findDoubleCompositions(players: Player[], limit: number): Composition[] {
   return findCompositions(players, limit, p => p.doubles)
 }
+
+export type Slot = { ranking: number; names: string[] }
+export type MergedComposition = { total: number; slots: Slot[] }
+
+export function groupCompositions(
+  compositions: Composition[],
+  ranking: (p: Player) => number
+): MergedComposition[] {
+  const groups = new Map<string, MergedComposition>()
+  for (const comp of compositions) {
+    const sorted = [...comp.players].sort((a, b) => ranking(b) - ranking(a))
+    const key = `${comp.total}_${sorted.map(p => ranking(p)).join('_')}`
+    if (!groups.has(key)) {
+      groups.set(key, { total: comp.total, slots: sorted.map(p => ({ ranking: ranking(p), names: [p.name] })) })
+    } else {
+      sorted.forEach((p, i) => {
+        const slot = groups.get(key)!.slots[i]
+        if (!slot.names.includes(p.name)) slot.names.push(p.name)
+      })
+    }
+  }
+  return [...groups.values()]
+}
