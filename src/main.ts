@@ -59,7 +59,16 @@ const app = document.getElementById('app')!
 app.innerHTML = `
   <h1>Interclub Planning</h1>
 
-  <section id="player-list" class="panel">
+  <section id="singles" class="panel">
+    <div id="singles-compositions-list" class="tab-panel"></div>
+  </section>
+
+  <section id="doubles" class="panel hidden">
+    <div id="doubles-compositions-list" class="tab-panel"></div>
+  </section>
+
+  <section id="player-list" class="panel hidden">
+    <label id="limit-label">Serie<input id="input-limit" type="number" min="1" /></label>
     <ul id="players-ul"></ul>
     <button id="btn-add-player" class="btn-add"><i class="fa-solid fa-plus"></i></button>
     <form id="player-form">
@@ -71,24 +80,18 @@ app.innerHTML = `
     </form>
   </section>
 
-  <section id="compositions" class="panel hidden">
-    <label>Serie<input id="input-limit" type="number" min="1" /></label>
-    <div class="tabs">
-      <button class="tab active" data-tab="singles">Enkels</button>
-      <button class="tab" data-tab="doubles">Dubbels</button>
-    </div>
-    <div id="singles-compositions-list" class="tab-panel"></div>
-    <div id="doubles-compositions-list" class="tab-panel hidden"></div>
-  </section>
-
   <nav class="main-tabs">
-    <button class="main-tab active" data-panel="player-list">
-      <i class="fa-solid fa-users"></i>
-      <span>Spelers</span>
+    <button class="main-tab active" data-panel="singles">
+      <i class="fa-solid fa-user"></i>
+      <span>Enkels</span>
     </button>
-    <button class="main-tab" data-panel="compositions">
+    <button class="main-tab" data-panel="doubles">
+      <i class="fa-solid fa-user-group"></i>
+      <span>Dubbels</span>
+    </button>
+    <button class="main-tab" data-panel="player-list">
       <i class="fa-solid fa-clipboard-list"></i>
-      <span>Opstellingen</span>
+      <span>Spelers</span>
     </button>
   </nav>
 `
@@ -256,22 +259,17 @@ playersUl.addEventListener('click', e => {
   }
 })
 
-document.querySelector('.tabs')!.addEventListener('click', e => {
-  const tab = (e.target as HTMLElement).closest<HTMLElement>('.tab')
-  if (!tab) return
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'))
-  tab.classList.add('active')
-  document.getElementById(`${tab.dataset.tab}-compositions-list`)!.classList.remove('hidden')
-})
+function activatePanel(panelId: string): void {
+  document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'))
+  document.querySelectorAll('.panel').forEach(p => p.classList.add('hidden'))
+  document.querySelector(`.main-tab[data-panel="${panelId}"]`)!.classList.add('active')
+  document.getElementById(panelId)!.classList.remove('hidden')
+}
 
 document.querySelector('.main-tabs')!.addEventListener('click', e => {
   const tab = (e.target as HTMLElement).closest<HTMLElement>('.main-tab')
   if (!tab) return
-  document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'))
-  document.querySelectorAll('.panel').forEach(p => p.classList.add('hidden'))
-  tab.classList.add('active')
-  document.getElementById(tab.dataset.panel!)!.classList.remove('hidden')
+  activatePanel(tab.dataset.panel!)
 })
 
 limitInput.addEventListener('input', () => {
@@ -284,3 +282,9 @@ limitInput.addEventListener('input', () => {
 })
 
 update()
+
+const available = players.filter(p => p.available)
+const hasCompositions =
+  findSingleCompositions(available, limit).length > 0 ||
+  findDoubleCompositions(available, limit).length > 0
+activatePanel(hasCompositions ? 'singles' : 'player-list')
