@@ -70,11 +70,19 @@ body {
   display: none;
 }
 
+header {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
 h1 {
   font-size: 1.5rem;
-  flex-shrink: 0;
-  padding: 1rem 1rem 0;
-  margin-bottom: 1rem;
+  margin-bottom: 0;
 }
 
 h2 {
@@ -221,11 +229,10 @@ button {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-bottom: 1rem;
 }
 
 #limit-label input {
-  width: 6rem;
+  width: 5rem;
 }
 
 .tab-panel {

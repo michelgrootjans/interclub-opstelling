@@ -57,7 +57,10 @@ if (preset) {
 const app = document.getElementById('app')!
 
 app.innerHTML = `
-  <h1>Interclub Planning</h1>
+  <header>
+    <h1>Interclub Planning</h1>
+    <label id="limit-label">Serie<input id="input-limit" type="number" min="1" /></label>
+  </header>
 
   <section id="singles" class="panel">
     <div id="singles-compositions-list" class="tab-panel"></div>
@@ -68,7 +71,6 @@ app.innerHTML = `
   </section>
 
   <section id="player-list" class="panel hidden">
-    <label id="limit-label">Serie<input id="input-limit" type="number" min="1" /></label>
     <ul id="players-ul"></ul>
     <button id="btn-add-player" class="btn-add"><i class="fa-solid fa-plus"></i></button>
     <form id="player-form">
