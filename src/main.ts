@@ -228,22 +228,27 @@ function renderCompositions(
     .join('')
 }
 
-function renderSinglesCompositions(): void {
-  const available = players.filter(p => p.available)
-  const compositions = findSingleCompositions(available, limit).sort((a, b) => b.total - a.total)
+function renderSinglesCompositions(): Composition[] {
+  const availablePlayers = players.filter(p => p.available)
+  const compositions = findSingleCompositions(availablePlayers, limit).sort((a, b) => b.total - a.total)
   renderCompositions(singlesCompositionsList, compositions, p => p.singles)
+  return compositions
 }
 
-function renderDoubleCompositions(): void {
-  const available = players.filter(p => p.available)
-  const compositions = findDoubleCompositions(available, limit).sort((a, b) => b.total - a.total)
+function renderDoubleCompositions(): Composition[] {
+  const availablePlayers = players.filter(p => p.available)
+  const compositions = findDoubleCompositions(availablePlayers, limit).sort((a, b) => b.total - a.total)
   renderCompositions(doublesCompositionsList, compositions, p => p.doubles)
+  return compositions
 }
 
-function update(): void {
+function update(selectInitialPanel = false): void {
   renderPlayers()
-  renderSinglesCompositions()
-  renderDoubleCompositions()
+  const singles = renderSinglesCompositions()
+  const doubles = renderDoubleCompositions()
+  if (selectInitialPanel) {
+    activatePanel(singles.length > 0 || doubles.length > 0 ? 'singles' : 'player-list')
+  }
 }
 
 form.addEventListener('submit', e => {
@@ -313,10 +318,4 @@ limitInput.addEventListener('input', () => {
   }
 })
 
-update()
-
-const available = players.filter(p => p.available)
-const hasCompositions =
-  findSingleCompositions(available, limit).length > 0 ||
-  findDoubleCompositions(available, limit).length > 0
-activatePanel(hasCompositions ? 'singles' : 'player-list')
+update(true)
